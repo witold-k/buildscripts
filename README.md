@@ -15,5 +15,5 @@ for:
     - and/or port to lua
 - need to be cleaned up, remove unnecessary od bad parts
 
-no hurry, since this is good enopugh for me for now
+no hurry, since this is good enough for me for now
 
