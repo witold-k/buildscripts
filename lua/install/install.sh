@@ -46,7 +46,7 @@ echo $LUA_INSTALL
 #$($LUA_INSTALL)
 
 install_lua_all() {
-    local versions=("5.1" "5.4" "5.5")
+    local versions=("5.1" "5.4")
 
     # Convert all arguments into an array so we can iterate safely
     local pkgs=("$@")
