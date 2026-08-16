@@ -1,0 +1,26 @@
+#!/usr/bin/lua5.4
+-- # !/usr/bin/env lua
+
+local uv = require("luv")
+
+local folder = arg[1]:gsub("/$", "")
+local filebase = folder:match("([^/]+)$")
+
+local args = {
+    "--exclude=.svn",
+    "--exclude=.git",
+    "--exclude=.hg",
+    "--exclude=build",
+    "--exclude=target",
+    "--exclude=*_make",
+    "-cvjSf",
+    filebase .. ".tar.bz2",
+    folder
+}
+
+local handle, pid = uv.spawn("tar", { args = args }, function(code, signal)
+    print("tar exited with code", code, "signal", signal)
+end)
+
+uv.run()
+

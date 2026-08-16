@@ -1,0 +1,53 @@
+#!/usr/bin/lua5.4
+------------------------------------------------------------------------------
+
+local path = require("pl.path")
+local raw = debug.getinfo(1, "S").source
+local script_dir
+
+if raw:sub(1,1) == "@" then
+    local full = raw:sub(2)  -- strip '@'
+
+    -- Normalize relative paths
+    full = path.normpath(full)
+
+    -- Convert to absolute path
+    if not path.isabs(full) then
+        full = path.abspath(full)
+    end
+
+    script_dir = path.dirname(full)
+end
+if not script_dir then
+    error("script_dir could not be determined!")
+end
+package.path = package.path .. ";" .. script_dir .. "/?.lua"
+
+------------------------------------------------------------------------------
+
+local script_path = require("script_path_from_debug")
+local my_dir = script_path.from_debug(debug.getinfo(1, "S"), 1)
+package.path = package.path .. ';' .. my_dir .. '/lib/?.lua'
+
+local dir = require("directory")
+
+-- Check if the directory argument is provided
+if #arg < 1 then
+    print("Usage: lua script.lua <directory>")
+    os.exit(1)
+end
+
+local directory = arg[1]
+local search_path = os.getenv("HOME") .. "/svn/development"
+local dir_path = dir.search(search_path, directory)
+
+if dir_path then
+    if lfs.mkdir(directory) then
+        print('create dir for mount: ' .. directory)
+    end
+    if dir.is_empty(directory) then
+        local cmd = 'sudo mount --bind ' .. dir_path .. ' ' .. directory
+        print(cmd)
+        os.execute(cmd)
+    end
+end

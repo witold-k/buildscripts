@@ -1,0 +1,39 @@
+vnext || exit
+
+branchname=$(git branch --show-current)
+originname=$(git rev-parse --abbrev-ref --symbolic-full-name @{u})
+
+if [ "$branchname" == "master" ]; then
+    echo "branch is: master => exit"
+    exit
+fi
+if [ "originname" == "origin/master" ]; then
+    echo "origin is: origin/master => exit"
+    exit
+fi
+if [ "$branchname" == "main" ]; then
+    echo "branch is: main => exit"
+    exit
+fi
+if [ "originname" == "origin/main" ]; then
+    echo "origin is: origin/main => exit"
+    exit
+fi
+
+git checkout master || exit
+git pull --rebase   || exit
+
+#CHANGED=$(git diff-index --name-only master --)
+mastername=$(git branch --show-current)
+if [ "$mastername" != "master" ];
+then
+    echo "can not switch to master"
+    exit
+fi
+
+git merge --squash $branchname || exit
+vpush || exit
+
+git push origin $branchname --delete
+git branch -D $branchname
+

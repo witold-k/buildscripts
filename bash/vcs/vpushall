@@ -1,0 +1,31 @@
+#/bin/sh
+current=$(pwd)
+
+vpush
+
+for dirs in $(ls -A)
+do
+  if [ -d $dirs/.git ];
+  then
+    cd $dirs
+    echo "git: " $dirs
+    git push
+    cd ..
+  fi
+
+  if [ -d $dirs/.svn ];
+  then
+    cd $dirs
+    echo "svn: " $dirs
+    svn commit
+    cd ..
+  fi
+
+  if [ -d $dirs/.hg ];
+  then
+    cd $dirs
+    echo "hg: " $dirs
+    hg push
+    cd ..
+  fi
+done

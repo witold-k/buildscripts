@@ -1,0 +1,10 @@
+TTYDEV="/dev/tty$1"
+
+if [ ! -c $TTYDEV ];
+then
+    echo "no such device $TTYDEV"
+    ls /dev/tty*
+else
+    picocom -e b -b 115200 $TTYDEV
+fi
+

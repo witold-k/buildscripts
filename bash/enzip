@@ -1,0 +1,3 @@
+FOLDER=${1%/}
+FILEBASE=$(basename $FOLDER)
+zip -r ${FILEBASE}.zip $FOLDER -x "*/.svn/**" -x "*/.git/**" -x "*/.hg/**"  -x "*/*_make/**" -x "*/build/**"

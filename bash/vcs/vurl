@@ -1,0 +1,15 @@
+if [ -d .git ]; then
+    git remote get-url origin
+fi
+
+if [ -f .git ]; then
+    git remote get-url origin
+fi
+
+if [ -d .svn ]; then
+    svn info | grep "^URL:"
+fi
+
+if [ -d .hg ]; then
+    hg paths default
+fi

@@ -1,0 +1,52 @@
+[constants]
+toolchain_name    = 'arm-obreey-linux-gnueabi'
+toolchain_version = '6.5'
+
+toolchain_dir     = '/opt/pocketbook_sdk/' + toolchain_version
+toolchain_base    = toolchain_dir + '/SDK-B288'
+toolchain_bin     = toolchain_base + '/usr/bin'
+toolchain_prefix  = toolchain_bin + '/' + toolchain_name + '-'
+# toolchain_ld_library_path = toolchain_base + '/usr/lib'
+
+sys_root = toolchain_base + '/usr/' + toolchain_name + '/sysroot'
+
+c_flags_base = ['-fPIC', '-mfloat-abi=softfp', '-Wall', '-Werror', '-fstack-protector-strong', '-O2', '-DTOOLCHAIN_NAME=arm-obreey-linux-gnueabi' ]
+cpp_flags_base = ['-fPIC', '-mfloat-abi=softfp', '-Wall', '-Werror', '-fstack-protector-strong', '-O2', '-DTOOLCHAIN_NAME=arm-obreey-linux-gnueabi' ]
+
+[cmake]
+TOOLCHAIN_VERSION = toolchain_version
+TOOLCHAIN_PREFIX  = toolchain_name + '-'
+TOOLCHAIN_BASE    = toolchain_base
+TOOLCHAIN_DIR     = toolchain_dir
+TOOLCHAIN_SHAREDLIB_SUFFIX = '.so'
+
+CC      = toolchain_prefix + 'gcc'
+CXX     = toolchain_prefix + 'g++'
+FC      = toolchain_prefix + 'gfortran'
+
+  CFLAGS = '-fPIC -Wall -Werror -fstack-protector-strong -O2 -DTOOLCHAIN_NAME=arm-obreey-linux-gnueabi'
+CXXFLAGS = '-fPIC -Wall -Werror -fstack-protector-strong -O2 -DTOOLCHAIN_NAME=arm-obreey-linux-gnueabi'
+
+[properties]
+toolchain_have_memory_map = true
+
+[built-in options]
+c_args = ['--sysroot=' + sys_root] + c_flags_base
+cpp_args = ['--sysroot=' + sys_root] + cpp_flags_base
+fortran_args = ['--sysroot=' + sys_root]
+c_link_args = ['--sysroot=' + sys_root]
+
+[binaries]
+c        = toolchain_prefix + 'gcc'
+cpp      = toolchain_prefix + 'g++'
+fc       = toolchain_prefix + 'gfortran'
+ar       = toolchain_prefix + 'ar'
+ld       = toolchain_prefix + 'ld'
+strip    = toolchain_prefix + 'strip'
+
+[host_machine]
+system     = 'linux'
+cpu_family = 'arm'
+cpu        = 'armv6'
+endian     = 'little'
+

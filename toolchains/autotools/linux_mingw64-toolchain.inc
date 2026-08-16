@@ -1,0 +1,45 @@
+CONFIGURE_SYSTEM_NAME="Windows"
+CONFIGURE_TARGET_SYSTEM_IS_WINDOWS="1"
+CONFIGURE_TARGET_DEFAULT_LINK_TYPE="SHARED"
+CONFIGURE_SUPPORT_SHARED_LIBRARIES="1"
+
+# -----------------------------------------------------------------------------
+
+TOOLCHAIN_VERSION="v1.1-2024-09-30"
+TOOLCHAIN_PREFIX="x86_64-w64-mingw32-"
+TOOLCHAIN_POSTFIX=""
+TOOLCHAIN_SYSROOT="/usr/x86_64-w64-mingw32"
+TOOLCHAIN_DIR="/usr/bin"
+TOOLCHAIN_SHAREDLIB_SUFFIX=".dll.a"
+
+# -----------------------------------------------------------------------------
+
+SYSROOT=${TOOLCHAIN_SYSROOT}
+SYSROOT_SWICTH="--sysroot=${TOOLCHAIN_SYSROOT}"
+
+# -----------------------------------------------------------------------------
+
+# mendatory settings
+         CC="${TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}gcc${TOOLCHAIN_POSTFIX}"
+        CXX="${TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}g++${TOOLCHAIN_POSTFIX}"
+     RANLIB="${TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}gcc-ranlib${TOOLCHAIN_POSTFIX}"
+         AR="${TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}gcc-ar${TOOLCHAIN_POSTFIX}"
+        GDB="${TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}gdb"
+         NM="${TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}gcc-nm${TOOLCHAIN_POSTFIX}"
+    OBJCOPY="${TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}objcopy"
+    OBJDUMP="${TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}objdump"
+RC_COMPILER="${TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}windres"
+    READELF="${TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}readelf"
+  SIZE_UTIL="${TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}size"
+      STRIP="${TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}strip"
+    WINDRES="${TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}windres"
+
+# -----------------------------------------------------------------------------
+
+GCC_COMMON_FLAGS="${SYSROOT_SWITCH} ${GCC_COMMON_FLAGS} -fstack-protector-strong -O2 -D_VARIANT_WINDOWS_ -D_OS_WINDOWS_ -D_COMP_MINGW_ "
+  CFLAGS="${GCC_COMMON_FLAGS} ${CFLAGS}"
+CXXFLAGS="${GCC_COMMON_FLAGS} ${CXXFLAGS}"
+LDFLAGS="${SYSROOT_SWITCH} ${LDFLAGS}"
+
+TOOLCHAIN_CROSS_COMPILE_SWITCH="--cross-compile-prefix=${TOOLCHAIN_PREFIX}"
+

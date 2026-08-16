@@ -1,0 +1,24 @@
+#/bin/sh
+current=$(pwd)
+
+if [ -d .git ];
+then
+    git lfs ls-files
+fi
+
+
+if [ -f .git ];
+then
+  git lfs ls-files
+fi
+
+for dirs in $(ls -A)
+do
+  if [ -d $dirs/.git ];
+  then
+    cd $dirs
+    echo "#### git: " $dirs
+    git lfs ls-files
+    cd $current
+  fi
+done

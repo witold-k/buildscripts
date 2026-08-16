@@ -1,0 +1,3 @@
+FOLDER=${1%/}
+FILEBASE=$(basename $FOLDER)
+tar --exclude=.svn --exclude=.git --exclude=.hg --exclude build --exclude "*_make" -cvzSf ${FILEBASE}.tar.bz2 $FOLDER

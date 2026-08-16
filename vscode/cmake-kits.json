@@ -1,0 +1,61 @@
+[
+    {
+        "name": "LINUX (Host PC)",
+        "toolchainFile": "${workspaceRoot}/buildscripts/toolchains/cmake/linux_gcc-toolchain.cmake",
+        "cmakeSettings": {
+            "TARGET_PREFIX_BASE": "/usr/devel",
+            "CMAKE_INSTALL_PREFIX:PATH": "/usr/devel/native",
+            "CMAKE_MODULE_PATH:PATH": "${workspaceRoot}/../../modulerefs/cmake",
+            "CPPCHECK_DISABLED:BOOL": "true",
+            "BB_WORK_DIR": "${env:BB_WORK_DIR}",
+            "BB_TARGET_SUFFIX": "${env:BB_TARGET_SUFFIX}",
+            "BB_TARGET": "${env:BB_TARGET}"
+        },
+        "environmentSetupScript": "${workspaceRoot}/scripts/env.sh"
+    },
+    {
+        "name": "LINUX ARM64",
+        "toolchainFile": "${workspaceRoot}/buildscripts/toolchains/cmake/linux_gcc_arm64-toolchain.cmake",
+        "cmakeSettings": {
+            "CMAKE_INSTALL_PREFIX:PATH": "${workspaceRoot}/build/deploy",
+            "CMAKE_MODULE_PATH:PATH": "${workspaceRoot}/../../modulerefs/cmake",
+            "CPPCHECK_DISABLED:BOOL": "true"
+        }
+    },
+    {
+        "name": "LINUX ARM32",
+        "toolchainFile": "${workspaceRoot}/buildscripts/toolchains/cmake/linux_gcc_arm32-toolchain.cmake",
+        "cmakeSettings": {
+            "CMAKE_INSTALL_PREFIX:PATH": "${workspaceRoot}/build/deploy",
+            "CMAKE_MODULE_PATH:PATH": "${workspaceRoot}/../../modulerefs/cmake",
+            "CPPCHECK_DISABLED:BOOL": "true"
+        }
+    },
+    {
+        "name": "MINGW32",
+        "toolchainFile": "${workspaceRoot}/buildscripts/toolchains/cmake/linux_mingw32-toolchain.cmake",
+        "cmakeSettings": {
+            "CMAKE_INSTALL_PREFIX:PATH": "${workspaceRoot}/build/deploy",
+            "CMAKE_MODULE_PATH:PATH": "${workspaceRoot}/../../modulerefs/cmake",
+            "CPPCHECK_DISABLED:BOOL": "true"
+        }
+    },
+    {
+        "name": "MINGW64",
+        "toolchainFile": "${workspaceRoot}/buildscripts/toolchains/cmake/linux_mingw64-toolchain.cmake",
+        "cmakeSettings": {
+            "CMAKE_INSTALL_PREFIX:PATH": "${workspaceRoot}/build/deploy",
+            "CMAKE_MODULE_PATH:PATH": "${workspaceRoot}/../../modulerefs/cmake",
+            "CPPCHECK_DISABLED:BOOL": "true"
+        }
+    },
+    {
+        "name": "ESP32",
+        "toolchainFile": "${workspaceRoot}/buildscripts/toolchains/cmake/xtensa_esp32-toolchain.cmake",
+        "cmakeSettings": {
+            "CMAKE_INSTALL_PREFIX:PATH": "${workspaceRoot}/build/deploy",
+            "CMAKE_MODULE_PATH:PATH": "${workspaceRoot}/../../modulerefs/cmake",
+            "CPPCHECK_DISABLED:BOOL": "true"
+        }
+    }
+]

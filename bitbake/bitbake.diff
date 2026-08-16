@@ -1,0 +1,12 @@
+diff --git a/lib/bb/parse/ast.py b/lib/bb/parse/ast.py
+index 49a078803..235229a8b 100644
+--- a/lib/bb/parse/ast.py
++++ b/lib/bb/parse/ast.py
+@@ -581,6 +581,7 @@ def multi_finalize(fn, d):
+                 d.setVar("BBEXTENDVARIANT", variantmap[name])
+             else:
+                 d.setVar("PN", "%s-%s" % (pn, name))
++                d.setVar("BBCLASSEXTENDCURR", "%s" % (name))
+             bb.parse.BBHandler.inherit_defer(extendedmap[name], fn, 0, d)
+ 
+         safe_d.setVar("BBCLASSEXTEND", extended)

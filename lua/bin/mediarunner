@@ -1,0 +1,68 @@
+#!/usr/bin/lua5.4
+
+------------------------------------------------------------------------------
+
+local path = require("pl.path")
+local uv = require("luv")
+local raw = debug.getinfo(1, "S").source
+local script_dir
+
+if raw:sub(1,1) == "@" then
+    local full = raw:sub(2)  -- strip '@'
+
+    -- Normalize relative paths
+    full = path.normpath(full)
+
+    -- Convert to absolute path
+    if not path.isabs(full) then
+        full = path.abspath(full)
+    end
+
+    script_dir = path.dirname(full)
+end
+if not script_dir then
+    error("script_dir could not be determined!")
+end
+package.path = package.path .. ";" .. script_dir .. "/?.lua"
+
+------------------------------------------------------------------------------
+
+local script_path = require("script_path_from_debug")
+local my_dir = script_path.from_debug(debug.getinfo(1, "S"), 1)
+package.path = package.path .. ';' .. my_dir .. '/lib/?.lua'
+
+-- CLI Argumente sammeln (z.B. .. und ../..)
+local extra_paths = {}
+for i = 1, #arg do
+    table.insert(extra_paths, arg[i])
+end
+
+local VolumeMapper = require("mappaths")
+local PodmanRunner = require("podmanmediarunner")
+
+local home = os.getenv("HOME")
+local user = os.getenv("USER")
+
+local mapper = VolumeMapper:new(home, user)
+local runner = PodmanRunner:new(mapper, {
+    image = "media:latest"
+})
+
+local uid = tostring(uv.getuid())
+local gid = tostring(uv.getgid())
+
+local opts = {
+    NAME = "mediarunner_container",
+    MUID = uid, 
+    MGID = gid,
+    PACKAGE = "main",
+    SCRIPT_DIR = uv.cwd() or ".",
+    XDG_RUNTIME_DIR = os.getenv("XDG_RUNTIME_DIR") or "/tmp",
+    workdir = uv.cwd(),
+    extra_paths = extra_paths,
+}
+
+local cmd = runner:run(opts)
+
+print(cmd)
+

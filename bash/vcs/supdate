@@ -1,0 +1,43 @@
+#/bin/sh
+current=$(pwd)
+
+
+if [ -d .git ] && grep -q 'remote "cryptremote"' .git/config;
+then
+    git pull cryptremote master
+    git submodule update --rebase --recursive
+    cd $current
+fi
+
+
+if [ -f .git ];
+then
+  git submodule update --recursive --remote
+fi
+
+if [ -d .svn ];
+then
+  svn up $dirs
+fi
+
+if [ -d .hg ];
+then
+  cd $dirs
+  hg pull
+  cd $current
+fi
+
+
+for dirs in $(ls -A)
+do
+  if [ -d $dirs/.git ] && grep -q 'remote "cryptremote"' $dirs/.git/config;
+  then
+    echo "########################################################"
+    echo "git: " $dirs
+    echo "########################################################"
+    cd $dirs
+    git pull cryptremote master
+    git submodule update --rebase --recursive
+    cd $current
+  fi
+done

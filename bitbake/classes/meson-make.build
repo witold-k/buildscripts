@@ -1,0 +1,12 @@
+project('env-generator', 'c', 'cpp',
+  version : '1.0',
+  default_options : ['warning_level=1']
+)
+
+# Diese Datei bleibt absichtlich minimal.
+# Wir nutzen sie nur, damit Meson die Toolchains lädt.
+# Das eigentliche Projekt wird weiterhin per Make gebaut.
+
+message('Host Compiler ID: ' + meson.get_compiler('c', native : true).get_id())
+message('Target Compiler ID: ' + meson.get_compiler('c', native : false).get_id())
+

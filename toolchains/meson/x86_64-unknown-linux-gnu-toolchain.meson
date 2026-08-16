@@ -1,0 +1,51 @@
+[constants]
+toolchain_name    = 'x86_64-unknown-linux-gnu'
+toolchain_version = 'v1.4-2025-10-24'
+
+toolchain_dir     = '/opt/compiler/' + toolchain_version
+toolchain_base    = toolchain_dir + '/' + toolchain_version + '/x-tools'
+toolchain_bin     = toolchain_base + '/' + toolchain_name + '/bin'
+toolchain_prefix  = toolchain_bin + '/' + toolchain_name + '-'
+
+sys_root = toolchain_base + '/' + toolchain_name + '/' + toolchain_name + '/sysroot'
+
+c_flags_base = ['-fPIC', '-Wall', '-Werror', '-fstack-protector-strong', '-O2', '-DTOOLCHAIN_NAME=x86_64-unknown-linux-gnu' ]
+cpp_flags_base = ['-fPIC', '-Wall', '-Werror', '-fstack-protector-strong', '-O2', '-DTOOLCHAIN_NAME=x86_64-unknown-linux-gnu' ]
+
+[cmake]
+TOOLCHAIN_VERSION = toolchain_version
+TOOLCHAIN_PREFIX  = 'x86_64-unknown-linux-gnu-'
+TOOLCHAIN_BASE    = '' + toolchain_base + ''
+TOOLCHAIN_DIR     = '' + toolchain_bin + ''
+TOOLCHAIN_SHAREDLIB_SUFFIX = '.so'
+
+CC      = toolchain_prefix + 'sysroot_gcc'
+CXX     = toolchain_prefix + 'sysroot_g++'
+FC      = toolchain_prefix + 'sysroot_gfortran'
+
+  CFLAGS = '-fPIC -Wall -Werror -fstack-protector-strong -O2'
+CXXFLAGS = '-fPIC -Wall -Werror -fstack-protector-strong -O2'
+
+LIBTOOL = toolchain_bin + '/libtool'
+
+[properties]
+toolchain_have_memory_map = true
+
+[built-in options]
+c_args = ['--sysroot=' + sys_root] + c_flags_base
+cpp_args = ['--sysroot=' + sys_root] + cpp_flags_base
+
+[binaries]
+c        = toolchain_prefix + 'sysroot_gcc'
+cpp      = toolchain_prefix + 'sysroot_g++'
+fc       = toolchain_prefix + 'sysroot_gfortran'
+ar       = toolchain_prefix + 'ar'
+ld       = toolchain_prefix + 'ld'
+strip    = toolchain_prefix + 'strip'
+
+[host_machine]
+system     = 'linux'
+cpu_family = 'x86_64'
+cpu        = 'x86_64'
+endian     = 'little'
+

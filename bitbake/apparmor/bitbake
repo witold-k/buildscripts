@@ -1,0 +1,22 @@
+abi <abi/4.0>,
+
+include <tunables/global>
+
+# unconfined vs default_allow
+
+/home/**/bitbake/bin/bitbake flags=(default_allow) {
+        userns,
+}
+
+/home/**/bitbake/bin/bitbake-worker flags=(default_allow) {
+        userns,
+}
+
+/usr/bin/just flags=(default_allow) {
+        userns,
+}
+
+/opt/rust/bin/just flags=(default_allow) {
+        userns,
+}
+

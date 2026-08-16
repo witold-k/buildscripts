@@ -1,0 +1,24 @@
+{
+    "comment": "all keywords: build, env:prepend, env:append, env:set mut be set",
+    "private": {
+        "PROJECT_ROOT:DIR": "..",
+        "MODULES_DIR:DIR":  "${PROJECT_ROOT}/modules",
+        "DEPLOY_DIR:DIR":   "${PROJECT_ROOT}/deploy",
+
+        "COMPILER_VERSION:STRING": "v1.1-2024-09-30",
+        "COMPILER_ROOT:DIR":       "/opt/compiler",
+        "COMPILER_DIR:DIR":        "/opt/compiler",
+
+        "BITBAKE_ROOT:DIR": "${MODULES_DIR}/bitbake",
+        "BITBAKE_EXE:FILE": "${BITBAKE_ROOT}/bin/bitbake"
+    },
+
+    "env:prepend": {},
+    "env:append": {
+        "PATH":       "${BITBAKE_ROOT}/bin",
+        "PYTHONPATH": "${BITBAKE_ROOT}/lib"
+    },
+    "env:set": {
+        "PYTHONLIB": "${BITBAKE_ROOT}/lib"
+    }
+}

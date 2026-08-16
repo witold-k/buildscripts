@@ -1,0 +1,1 @@
+svn status | grep ^? | awk '{$1=""; print " --force \""substr($0,2)"\"" }' | xargs rm -r

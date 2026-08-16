@@ -1,0 +1,22 @@
+#/bin/sh
+for dirs in $(ls -A)
+do
+  if [ -d $dirs/.git ];
+  then
+    cd $dirs
+    echo "git clone " $(git remote get-url origin)
+    cd ..
+  fi
+  if [ -d $dirs/.svn ];
+  then
+    cd $dirs
+    echo "svn checkout " $(svn info | grep ^URL: | sed  's/URL: //g')
+    cd ..
+  fi
+  if [ -d $dirs/.hg ];
+  then
+    cd $dirs
+    echo "hg clone " $(hg paths default)
+    cd ..
+  fi
+done

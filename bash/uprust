@@ -1,0 +1,8 @@
+RUSTUP_HOME=/opt/rust
+export RUSTUP_HOME
+CARGO_HOME=/opt/rust
+export CARGO_HOME
+unset RUSTC_WRAPPER
+
+rustup update
+cargo install-update -a

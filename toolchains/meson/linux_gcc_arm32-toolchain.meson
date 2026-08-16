@@ -1,0 +1,41 @@
+[constants]
+toolchain_name    = 'arm-unknown-linux-gnueabihf'
+toolchain_version = 'v1.4-2025-10-24'
+toolchain_dir     = '/opt/compiler/' + toolchain_version
+toolchain_base    = toolchain_dir + '/' + toolchain_version + '/x-tools'
+toolchain_bin     = toolchain_base + '/' + toolchain_name + '/bin'
+toolchain_prefix  = toolchain_bin + '/' + toolchain_name + '-'
+
+[cmake]
+TOOLCHAIN_VERSION = toolchain_version
+TOOLCHAIN_PREFIX  = 'arm-unknown-linux-gnueabihf-'
+TOOLCHAIN_BASE    = '/opt/compiler/' + toolchain_version + '/' + toolchain_version + '/x-tools/arm-unknown-linux-gnueabihf'
+TOOLCHAIN_SYSROOT = '/opt/compiler/' + toolchain_version + '/' + toolchain_version + '/x-tools/arm-unknown-linux-gnueabihf/arm-unknown-linux-gnueabihf'
+TOOLCHAIN_DIR     = '/opt/compiler/' + toolchain_version + '/' + toolchain_version + '/x-tools/arm-unknown-linux-gnueabihf/bin'
+TOOLCHAIN_SHAREDLIB_SUFFIX = '.so'
+
+CC    = 'arm-linux-gnueabihf-gnu-sysroot_gcc'
+CXX   = 'arm-linux-gnueabihf-gnu-sysroot_g++'
+
+  CFLAGS = '-fPIC -Wall -Werror -fstack-protector-strong -O2'
+CXXFLAGS = '-fPIC -Wall -Werror -fstack-protector-strong -O2'
+
+LIBTOOL = '/opt/compiler/' + toolchain_version + '/' + toolchain_version + '/x-tools/arm-unknown-linux-gnueabihf/bin/libtool'
+
+[properties]
+toolchain_have_memory_map = true
+
+[binaries]
+c        = toolchain_prefix + 'sysroot_gcc'
+cpp      = toolchain_prefix + 'sysroot_g++'
+fc       = toolchain_prefix + 'sysroot_gfortran'
+ar       = toolchain_prefix + 'ar'
+ld       = toolchain_prefix + 'ld'
+strip    = toolchain_prefix + 'strip'
+
+[host_machine]
+system     = 'linux'
+cpu_family = 'arm'
+cpu        = 'armv6'
+endian     = ''
+

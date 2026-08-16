@@ -1,0 +1,56 @@
+#/bin/sh
+
+current=$(pwd)
+
+
+if [ -d .git ];
+then
+  echo "==============================================================="
+  echo "git: " $current
+  git status
+  exit
+fi
+
+if [ -d .svn ];
+then
+  echo "==============================================================="
+  echo "svn: " $current
+  svn status
+  exit
+fi
+
+if [ -d .hg ];
+then
+  echo "==============================================================="
+  echo "hg: " $current
+  hg status
+  exit
+fi
+
+
+for dirs in $(ls -A)
+do
+  if [ -d $dirs/.git ];
+  then
+    echo "==============================================================="
+    echo "git: " $dirs
+    cd $dirs
+    git status
+    cd $current
+  fi
+
+  if [ -d $dirs/.svn ];
+  then
+    echo "svn: " $dirs
+    svn status $dirs
+  fi
+
+  if [ -d $dirs/.hg ];
+  then
+    echo "==============================================================="
+    echo "hg: " $dirs
+    cd $dirs
+    hg status $dirs
+    cd $current
+  fi
+done

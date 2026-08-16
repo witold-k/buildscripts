@@ -1,0 +1,1 @@
+git submodule foreach --quiet 'echo git submodule add  `git remote get-url origin` $sm_path'

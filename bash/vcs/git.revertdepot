@@ -1,0 +1,11 @@
+export URL=$(git remote get-url origin)
+export DIR=$(basename $(pwd))
+cd ..
+chmod -R u+w $DIR
+rm -rf $DIR
+git clone --recurse-submodules $URL $DIR
+cd $DIR
+git submodule foreach -q --recursive \
+    'branch="$(git config -f $toplevel/.gitmodules submodule.$name.branch)"; \
+     [ "$branch" = "" ] && \
+    git checkout -B dev && git branch --set-upstream-to=origin/dev dev'

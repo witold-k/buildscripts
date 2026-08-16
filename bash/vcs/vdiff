@@ -1,0 +1,8 @@
+if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    git difftool -y --tool meld "$@"
+fi
+
+WCBRANCH=`svn info 2> /dev/null | wc -l`
+if [ ${WCBRANCH} -ne 0 ]; then
+    svn diff --diff-cmd=$HOME/bin/diff-svn "$@"
+fi

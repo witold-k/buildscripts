@@ -1,0 +1,10 @@
+if [ -z "$1" ];
+then
+    echo "no issue set - exit"
+    exit
+fi
+
+issue=${1// /_}
+git checkout -b "$issue"
+git push --set-upstream origin "$issue"
+

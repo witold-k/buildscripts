@@ -1,0 +1,69 @@
+#/bin/sh
+current=$(pwd)
+
+
+if [ -d .git ];
+then
+    git pull
+    git submodule update --rebase --recursive
+    cd $current
+fi
+
+
+if [ -f .git ];
+then
+  git submodule update --recursive --remote
+fi
+
+if [ -d .svn ];
+then
+  svn up $dirs
+fi
+
+if [ -d .hg ];
+then
+  cd $dirs
+  hg pull
+  cd $current
+fi
+
+if [ -f Justfile ];
+then
+    if grep -q "update:" Justfile;
+    then
+        just update
+    fi
+fi
+
+for dirs in $(ls -A)
+do
+  if [ -d $dirs/.git ];
+  then
+    echo "########################################################"
+    echo "git: " $dirs
+    echo "########################################################"
+    cd $dirs
+    git pull
+    git submodule update --rebase --recursive
+    cd $current
+  fi
+
+  if [ -d $dirs/.svn ];
+  then
+    echo "########################################################"
+    echo "svn: " $dirs
+    echo "########################################################"
+    svn up $dirs
+  fi
+
+  if [ -d $dirs/.hg ];
+  then
+    echo "########################################################"
+    echo "hg: " $dirs
+    echo "########################################################"
+    cd $dirs
+    hg pull
+    cd $current
+  fi
+done
+
