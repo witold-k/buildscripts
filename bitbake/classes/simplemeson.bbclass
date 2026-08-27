@@ -96,9 +96,9 @@ python do_configure() {
     args += ["--prefix ", tpd]
     args += ["--libdir ", tpd + '/lib']
     args += ["--backend ", mgen]
-    if None != nativepkgpath:
+    if nativepkgpath:
         args += ["--build.pkg-config-path", nativepkgpath]
-    if None != pkgpath:
+    if pkgpath:
         args += ["--pkg-config-path ", pkgpath]
     args += [b, s]
 
