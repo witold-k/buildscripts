@@ -93,13 +93,13 @@ python do_configure() {
         args += ["-Dc_link_args='" + ldf + "'", "-Dcpp_link_args='" + ldf + "'"]
     args.append(copt)
 
-    args += ["--prefix ", tpd]
-    args += ["--libdir ", tpd + '/lib']
-    args += ["--backend ", mgen]
+    args += ["--prefix", tpd]
+    args += ["--libdir", tpd + '/lib']
+    args += ["--backend", mgen]
     if nativepkgpath:
         args += ["--build.pkg-config-path", nativepkgpath]
     if pkgpath:
-        args += ["--pkg-config-path ", pkgpath]
+        args += ["--pkg-config-path", pkgpath]
     args += [b, s]
 
     cmd = " ".join(args)
