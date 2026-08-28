@@ -20,7 +20,7 @@ MESON_LDFLAGS ?= ""
 MESON_DEBUG ?= "False"
 
 python do_configure() {
-    import subprocess, sys, bbenv, os
+    import subprocess, sys, bbenv
     from pkgconfigsetup import CidePkgConfig
 
     apply_meson_properties(d.getVar('TOOLCHAIN'), d)
@@ -157,14 +157,14 @@ python do_configure() {
                 text=True,
             )
 
-        bb.note(
-            "PKG-CONFIG TEST {}: rc={} stdout={!r} stderr={!r}".format(
-                name,
-                result.returncode,
-                result.stdout,
-                result.stderr,
+            bb.note(
+                "PKG-CONFIG TEST {}: rc={} stdout={!r} stderr={!r}".format(
+                    name,
+                    result.returncode,
+                    result.stdout,
+                    result.stderr,
+                )
             )
-        )
 
     #
     # Meson executes pkg-config using this environment.
