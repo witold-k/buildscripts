@@ -45,7 +45,7 @@ python do_configure_copy() {
     b = d.getVar('B')
     ccs = d.getVar('CONFIGURE_COPY_SRC')
     cds = d.getVar('CONFIGURE_DEEPCOPY_SRC')
-    if (ccs == 'False') and (cds == False):
+    if (ccs == 'False') and (cds == 'False'):
         return
 
     ccd = d.getVar('CONFIGURE_CONFIGURE_DIR')
@@ -154,7 +154,7 @@ python do_configure() {
         for line in lines:
             bb.plain(line.decode('utf-8').rstrip())
         bb.error('CONFIGURE FAILED: ' + b)
-        bb.warn('cd ' + b + ' && ' + str)
+        bb.warn('cd ' + b + ' && ' + cmd)
         sys.exit(retval)
 }
 

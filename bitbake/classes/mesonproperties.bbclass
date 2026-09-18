@@ -90,7 +90,7 @@ def apply_meson_properties(file, d, ctar=None, set_environment=True, skip_sysroo
         if kv.valid():
             if (kv.key == 'CFLAGS'):
                 d.setVar('CFLAGS', kv.value)
-            if (kv == 'CXXFLAGS'):
+            if (kv.key == 'CXXFLAGS'):
                 d.setVar('CXXFLAGS', kv.value)
             if (kv.key == 'LDFLAGS'):
                 d.setVar('LDFLAGS', kv.value)

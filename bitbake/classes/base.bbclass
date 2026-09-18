@@ -36,7 +36,7 @@ python do_mrproper() {
     if os.path.isdir(b):
         shutil.rmtree(b)
     s = d.getVar('S')
-    if os.path.isdir('s' + "/" + '.git'):
+    if os.path.isdir(os.path.join(s, '.git')):
         call("git checkout .", cwd = s)
         call("git clean -xdf", cwd = s)
 }

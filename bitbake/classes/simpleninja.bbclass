@@ -21,6 +21,9 @@ python do_compile() {
         mp  = d.getVar('NINJA_MAKE_BIN')
         cmd = mp + " -j " + mn + " -C " + b
 
+    else:
+        raise Exception('No build.ninja or Makefile found in ' + b)
+
     bb.note("BUILD_DIR: " + b)
     bb.note(cmd)
 
@@ -66,6 +69,9 @@ python do_install() {
     elif os.path.exists(b + '/Makefile'):
         mp = d.getVar('NINJA_MAKE_BIN')
         cmd = "DESTDIR=" + inst + " " + mp + " -C " + b + " install"
+
+    else:
+        raise Exception('No build.ninja or Makefile found in ' + b)
 
     os.makedirs(inst, exist_ok=True)
 

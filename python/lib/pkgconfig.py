@@ -29,7 +29,7 @@ class PkgConfigType(Enum):
 class PkgConfig:
     @staticmethod
     def can_replace_key(key):
-        return key not in ["prefix,", "bindir", "datadir", "libdir"]
+        return key not in ["prefix", "bindir", "datadir", "libdir"]
 
     @staticmethod
     def load(env, filename: str):
