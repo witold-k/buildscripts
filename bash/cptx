@@ -1,0 +1,2 @@
+tmux capture-pane -p -S - | xclip -selection clipboard
+# tmux capture-pane -p -S - | wl-copy
