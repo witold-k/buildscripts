@@ -1,0 +1,6 @@
+sudo lpadmin \
+  -p hp477 \
+  -E \
+  -v ipp://192.168.0.149:631/ipp/print \
+  -m everywhere
+
