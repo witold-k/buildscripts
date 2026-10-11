@@ -160,6 +160,7 @@ local group1 = {
 
 local group2 = {
     [".txt"] = true,
+    [".log"] = true,
 }
 
 local group3 = {
