@@ -5,8 +5,15 @@ def get_cmake_version(bb, cmake_bin):
         [cmake_bin, '--version'],
         capture_output=True,
         text=True,
-        check=True
+        check=False,
     )
+
+    if result.returncode != 0:
+        bb.error(f"CMake exit code: {result.returncode}")
+        bb.error(f"CMake stderr: {result.stderr}")
+        bb.error(f"LD_LIBRARY_PATH: {os.environ.get('LD_LIBRARY_PATH')}")
+        bb.error(f"LD_PRELOAD: {os.environ.get('LD_PRELOAD')}")
+        raise RuntimeError("CMake version detection failed")
 
     # 2. Die erste Zeile nehmen und splitten
     first_line = result.stdout.splitlines()[0]
