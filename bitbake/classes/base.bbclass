@@ -46,8 +46,12 @@ python () {
 
     origenv = d.getVar("BB_ORIGENV", False)
     compiler_dir = origenv.getVar("COMPILER_DIR", False)
+    if compiler_dir is None:
+        raise Exception("Compiler not set")
     d.setVar("COMPILER_DIR", compiler_dir)
     compiler_version = origenv.getVar("COMPILER_VERSION", False)
+    if compiler_version is None:
+        raise Exception("Compiler Version not set")
     d.setVar("COMPILER_VERSION", compiler_version)
 
     exc = d.getVar('BBCLASSEXTENDCURR')

@@ -1,4 +1,4 @@
-inherit mesonproperties populate
+inherit populate
 
 NATIVE_TOOLCHAIN = "${PROJECT_ROOT}/buildscripts/toolchains/meson/${NATIVE_TARGET}-toolchain.meson"
 TOOLCHAIN = "${PROJECT_ROOT}/buildscripts/toolchains/meson/${CURRENT_TARGET}-toolchain.meson"
@@ -80,6 +80,8 @@ do_configure() {
 
 python do_compile() {
     import subprocess, sys
+    from mesonproperties import apply_meson_properties
+
     apply_meson_properties(d.getVar('NATIVE_TOOLCHAIN'), d, d.getVar('NATIVE_TARGET'), skip_sysroot=True)
     hostcc       = d.getVar('CC')
     hostcxx      = d.getVar('CXX')

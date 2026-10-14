@@ -1,4 +1,4 @@
-inherit mesonproperties simpleninja test populate
+inherit simpleninja test populate
 
 # TOOLCHAIN is a directory here with files:
 # BUILD and config.bzl

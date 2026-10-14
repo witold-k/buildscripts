@@ -1,4 +1,4 @@
-inherit test simpleninja mesonproperties populate
+inherit test simpleninja populate
 
 TOOLCHAIN = "${PROJECT_ROOT}/buildscripts/toolchains/meson/${CURRENT_TARGET}-toolchain.meson"
 NATIVE_TOOLCHAIN = "${PROJECT_ROOT}/buildscripts/toolchains/meson/${NATIVE_TARGET}-toolchain.meson"
@@ -22,8 +22,11 @@ MESON_DEBUG ?= "False"
 python do_configure() {
     import subprocess, sys, bbenv, bbpaths
     from pkgconfigsetup import CidePkgConfig
+    from mesonproperties import apply_meson_properties
 
-    apply_meson_properties(d.getVar('TOOLCHAIN'), d)
+    ct = d.getVar('CURRENT_TARGET')
+    tc = d.getVar('TOOLCHAIN')
+    apply_meson_properties(tc, d)
 
     module = d.getVar('MODULE')
     if module is None:

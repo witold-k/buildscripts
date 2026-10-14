@@ -1,4 +1,4 @@
-inherit mesonproperties simpleninja test populate
+inherit simpleninja test populate
 
 TOOLCHAIN = "${PROJECT_ROOT}/buildscripts/toolchains/cmake/${CURRENT_TARGET}-toolchain.cmake"
 MESON_TOOLCHAIN = "${PROJECT_ROOT}/buildscripts/toolchains/meson/${CURRENT_TARGET}-toolchain.meson"
@@ -15,17 +15,21 @@ CMAKE_NPROC ?= "${NPROC}"
 
 python do_configure() {
     import subprocess, sys, bbdefaultvars
+    from pkgconfigsetup import CidePkgConfig
+    from mesonproperties import apply_meson_properties
+
     apply_meson_properties(d.getVar('MESON_TOOLCHAIN'), d)
     bbdefaultvars.bbdefaultvars(bb, d)
 
     module = d.getVar('MODULE')
-    if (module == None): raise Exception('CONFIGURE: MODULE NOT SET')
+    if (module is None):
+        raise Exception('CONFIGURE: MODULE NOT SET')
 
     env = os.environ.copy()
 
     bbct  = d.getVar('CURRENT_TARGET')
     sdk_dir = d.getVar('SDK_DIR')
-    if sdk_dir != None:
+    if sdk_dir is not None:
         env['SDK_DIR'] = sdk_dir + '/' + bbct
 
     # =========================================================================

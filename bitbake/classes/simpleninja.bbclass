@@ -7,6 +7,8 @@ NINJA_NPROC ?= "${NPROC}"
 
 python do_compile() {
     import subprocess, sys, os
+    from mesonproperties import apply_meson_properties
+
     apply_meson_properties(d.getVar('MESON_TOOLCHAIN'), d)
 
     b  = d.getVar('B')

@@ -1,4 +1,4 @@
-inherit mesonproperties populate simpleautoconfigure
+inherit populate simpleautoconfigure
 
 TOOLCHAIN = "${PROJECT_ROOT}/buildscripts/toolchains/meson/${CURRENT_TARGET}-toolchain.meson"
 NATIVE_TOOLCHAIN = "${PROJECT_ROOT}/buildscripts/toolchains/meson/${NATIVE_TARGET}-toolchain.meson"
@@ -63,6 +63,8 @@ python do_configure_copy() {
 
 python do_configure() {
     import subprocess, sys, fileutils, bbenv, stat
+    from mesonproperties import apply_meson_properties
+
     apply_meson_properties(d.getVar('TOOLCHAIN'), d)
     s = d.getVar('S')
     b = d.getVar('B')
