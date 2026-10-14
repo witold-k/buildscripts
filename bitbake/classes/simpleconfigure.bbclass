@@ -162,6 +162,8 @@ python do_configure() {
 
 python do_compile() {
     import subprocess, sys, bbenv
+    from mesonproperties import apply_meson_properties
+
     apply_meson_properties(d.getVar('TOOLCHAIN'), d)
 
     nw = ' ' + (d.getVar('NOWARN') or '') + ' '  + (d.getVar('DEPEND_INCLUDE_DIRS_SWITCH') or '')

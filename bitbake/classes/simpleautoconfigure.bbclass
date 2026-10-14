@@ -37,6 +37,8 @@ addtask autotools_autoconf
 do_autotools_autoconf[nostamp] = "1"
 do_autotools_autoconf[dirs] = "${S}"
 python do_autotools_autoconf() {
+    from mesonproperties import apply_meson_properties
+
     apply_meson_properties(d.getVar('TOOLCHAIN'), d)
     s = d.getVar('S')
     b = d.getVar('B')
@@ -70,6 +72,8 @@ addtask autotools_automake
 do_autotools_automake[nostamp] = "1"
 do_autotools_automake[dirs] = "${S}"
 python do_autotools_automake() {
+    from mesonproperties import apply_meson_properties
+
     apply_meson_properties(d.getVar('TOOLCHAIN'), d)
     s = d.getVar('S')
     b = d.getVar('B')
@@ -101,6 +105,8 @@ addtask autotools_automake
 do_autotools_automake[nostamp] = "1"
 do_autotools_automake[dirs] = "${S}"
 python do_autotools_automake() {
+    from mesonproperties import apply_meson_properties
+
     apply_meson_properties(d.getVar('TOOLCHAIN'), d)
     s = d.getVar('S')
     b = d.getVar('B')
@@ -133,6 +139,8 @@ addtask autotools_autoreconf
 do_autotools_autoreconf[nostamp] = "1"
 do_autotools_autoreconf[dirs] = "${S}"
 python do_autotools_autoreconf() {
+    from mesonproperties import apply_meson_properties
+
     apply_meson_properties(d.getVar('TOOLCHAIN'), d)
     s = d.getVar('S')
     b = d.getVar('B')
@@ -167,6 +175,8 @@ addtask autotools_full_autoreconf
 do_autotools_full_autoreconf[nostamp] = "1"
 do_autotools_full_autoreconf[dirs] = "${S}"
 python do_autotools_full_autoreconf() {
+    from mesonproperties import apply_meson_properties
+
     apply_meson_properties(d.getVar('TOOLCHAIN'), d)
     s = d.getVar('S')
     b = d.getVar('B')
@@ -209,6 +219,7 @@ do_autotools_autogen[nostamp] = "1"
 do_autotools_autogen[dirs] = "${S}"
 python do_autotools_autogen() {
     import fileutils
+    from mesonproperties import apply_meson_properties
 
     apply_meson_properties(d.getVar('TOOLCHAIN'), d)
     s = d.getVar('S')
@@ -255,6 +266,7 @@ do_autotools_autogen_reconf[nostamp] = "1"
 do_autotools_autogen_reconf[dirs] = "${S}"
 python do_autotools_autogen_reconf() {
     import fileutils
+    from mesonproperties import apply_meson_properties
 
     apply_meson_properties(d.getVar('TOOLCHAIN'), d)
     s = d.getVar('S')
@@ -301,6 +313,8 @@ addtask autotools_fake_bootstrap
 do_autotools_fake_bootstrap[nostamp] = "1"
 do_autotools_fake_bootstrap[dirs] = "${S}"
 python do_autotools_fake_bootstrap() {
+    from mesonproperties import apply_meson_properties
+
     apply_meson_properties(d.getVar('TOOLCHAIN'), d)
     s = d.getVar('S')
     b = d.getVar('B')
@@ -351,6 +365,8 @@ addtask autotools_bootstrap
 do_autotools_bootstrap[nostamp] = "1"
 do_autotools_bootstrap[dirs] = "${S}"
 python do_autotools_bootstrap() {
+    from mesonproperties import apply_meson_properties
+
     apply_meson_properties(d.getVar('TOOLCHAIN'), d)
     s = d.getVar('S')
     b = d.getVar('B')
