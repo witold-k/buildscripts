@@ -12,6 +12,8 @@ addtask autotools_aclocal
 do_autotools_aclocal[nostamp] = "1"
 do_autotools_aclocal[dirs] = "${S}"
 python do_autotools_aclocal() {
+    from mesonproperties import apply_meson_properties
+
     apply_meson_properties(d.getVar('TOOLCHAIN'), d)
     os.environ['CFLAGS']          = d.getVar('CONFIGURE_CFLAGS')
     os.environ['CXXFLAGS']        = d.getVar('CONFIGURE_CXXFLAGS')
