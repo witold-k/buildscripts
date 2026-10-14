@@ -95,7 +95,6 @@ def bbdefaultvars(bb, d, ct=None):
         d.setVar('CMAKE_VERSION', cmake_version)
         d.setVar('CMAKE_ROOT', get_cmake_root(bb, cmake_bin, cmake_version))
         d.setVar('LUA_BIN',    basedir + '/wrapper/bin/lua')
-        d.setVar('MESON_BIN',  basedir + '/wrapper/bin/meson')
         d.setVar('NINJA_BIN',  basedir + '/wrapper/bin/ninja')
         d.setVar('CMAKE_INSTALLED_PREFIX', basedir)
     else:
@@ -106,7 +105,6 @@ def bbdefaultvars(bb, d, ct=None):
         d.setVar('CMAKE_VERSION', cmake_version)
         d.setVar('CMAKE_ROOT', get_cmake_root(bb, '/usr/bin/cmake', cmake_version))
         d.setVar('LUA_BIN',    '/usr/bin/lua')
-        d.setVar('MESON_BIN',  '/usr/bin/meson')
         d.setVar('NINJA_BIN',  '/usr/bin/ninja')
         d.setVar('CMAKE_INSTALLED_PREFIX', '/usr/')
 

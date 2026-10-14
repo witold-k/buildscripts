@@ -1,5 +1,6 @@
 import os
 
+
 class BBCCXXEntry:
 
     def __init__(self, d, target, ct, pb, nv):

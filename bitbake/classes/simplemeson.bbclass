@@ -20,7 +20,7 @@ MESON_LDFLAGS ?= ""
 MESON_DEBUG ?= "False"
 
 python do_configure() {
-    import subprocess, sys, bbenv
+    import subprocess, sys, bbenv, bbpaths
     from pkgconfigsetup import CidePkgConfig
 
     apply_meson_properties(d.getVar('TOOLCHAIN'), d)
@@ -38,7 +38,7 @@ python do_configure() {
     is_native = d.getVar('IS_NATIVE')
     is_debug  = d.getVar('MESON_DEBUG') == "True"
 
-    meson_bin = d.getVar('MESON_BIN')
+    meson_bin = bbpaths.BBPaths.from_current(d, 'meson').install_dir + '/bin/meson'
     mprp = d.getVar('MESON_PROGRAM_PATH')
     tc = d.getVar('TOOLCHAIN')
     ntc = d.getVar('NATIVE_TOOLCHAIN')
