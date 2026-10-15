@@ -50,9 +50,16 @@ python do_configure() {
     ccf = ' ' + (d.getVar('MESON_C_FLAGS') or '') + nw
     cxxf = ' ' + (d.getVar('MESON_CXX_FLAGS') or '') + nw
 
-    ldf = d.getVar('MESON_LDFLAGS')
+    # Staging libraries are located by -L and -rpath-link at link time.
+    # Absolute -rpath entries must not enter installed ELF binaries.
+    ldf = d.getVar('MESON_LDFLAGS') or ''
+    linker_args = [
+        flag for flag in shlex.split(ldf)
+        if not (flag.startswith('-Wl,-rpath=')
+                or flag.startswith('-Wl,-rpath,'))
+    ]
     env = os.environ.copy()
-    env['LDFLAGS'] = ldf or ''
+    env['LDFLAGS'] = shlex.join(linker_args)
     env['NINJA'] = d.getVar('NINJA_BIN')
     if rust is not None:
         env['RUSTUP_HOME'] = rust
@@ -104,11 +111,10 @@ python do_configure() {
             '-Dbuild.pkg_config_path=' + build_pkgconfig.path,
         ])
 
-    if ldf is not None:
-        args.extend([
-            f"-Dc_link_args={shlex.split(ldf)!r}",
-            f"-Dcpp_link_args={shlex.split(ldf)!r}",
-        ])
+    args.extend([
+        f"-Dc_link_args={linker_args!r}",
+        f"-Dcpp_link_args={linker_args!r}",
+    ])
 
     if copt:
         args.extend(shlex.split(copt))
