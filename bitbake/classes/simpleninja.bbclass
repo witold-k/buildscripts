@@ -116,6 +116,14 @@ python do_install() {
             if elf_type not in (2, 3):
                 continue
 
+            if not readelf:
+                raise RuntimeError('readelf is required for RPATH inspection')
+            dynamic = subprocess.run(
+                [readelf, '-d', filename],
+                capture_output=True, text=True, check=True
+            ).stdout
+            if work_prefix not in dynamic:
+                continue
             if not patchelf:
                 raise RuntimeError(
                     'patchelf is required for CIDE install RPATH cleanup'
@@ -139,12 +147,6 @@ python do_install() {
                     retained.append(relative)
 
             # Preserve DT_RPATH versus DT_RUNPATH semantics.
-            if not readelf:
-                raise RuntimeError('readelf is required for RPATH inspection')
-            dynamic = subprocess.run(
-                [readelf, '-d', filename],
-                capture_output=True, text=True, check=True
-            ).stdout
             args = [patchelf]
             if '(RPATH)' in dynamic:
                 args.append('--force-rpath')
