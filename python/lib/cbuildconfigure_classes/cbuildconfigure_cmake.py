@@ -81,12 +81,12 @@ class CBuildConfigureCMake(BuildConfiguration):
                     'BB_WORK_DIR'):
             value = (self.get('top_dir') if key == 'BB_TOP_DIR' else
                      self.get('temp_dir') + '/work' if key == 'BB_WORK_DIR' else
-                     self.get({'BB_TARGET': 'CURRENT_TARGET',
-                               'BB_TARGET_SUFFIX': 'CURRENT_TARGET_SUFFIX',
-                               'BB_TARGET_PREFIX': 'CURRENT_TARGET_PREFIX',
-                               'BB_NATIVE_TARGET': 'NATIVE_TARGET',
-                               'BB_NATIVE_TARGET_SUFFIX': 'NATIVE_TARGET_SUFFIX',
-                               'BB_NATIVE_TARGET_PREFIX': 'NATIVE_TARGET_PREFIX'}[key]))
+                     self.get({'BB_TARGET': 'target',
+                               'BB_TARGET_SUFFIX': 'target_suffix',
+                               'BB_TARGET_PREFIX': 'target_prefix',
+                               'BB_NATIVE_TARGET': 'native_target',
+                               'BB_NATIVE_TARGET_SUFFIX': 'native_target_suffix',
+                               'BB_NATIVE_TARGET_PREFIX': 'native_target_prefix'}[key]))
             argv.append('-D' + key + '=' + str(value))
         argv += shlex.split(self.get('options', ''))
         argv += ['-DCMAKE_MAKE_PROGRAM=' + self.get('make_program'),
