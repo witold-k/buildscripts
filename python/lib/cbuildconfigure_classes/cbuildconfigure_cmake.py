@@ -1,20 +1,15 @@
 """Reusable CMake configuration object for CIDE."""
 import os
 import shlex
-import bbdefaultvars
-from mesonproperties import apply_meson_properties
 from cbuildconfigure_classes.common import BuildConfiguration, clean_linker_flags
 
 
 class CBuildConfigureCMake(BuildConfiguration):
-    def create_command(self, bb):
-        d = self.d
-        apply_meson_properties(self.get('MESON_TOOLCHAIN'), d)
-        bbdefaultvars.bbdefaultvars(bb, d)
+    def create_command(self):
         if not self.get('MODULE'):
             raise ValueError('CONFIGURE: MODULE NOT SET')
 
-        env = os.environ.copy()
+        env = self.environ.copy()
         target = self.get('CURRENT_TARGET')
         version = self.get('COMPILER_VERSION')
         sdk = self.get('SDK_DIR')
@@ -104,7 +99,3 @@ class CBuildConfigureCMake(BuildConfiguration):
         build = self.get('B')
         os.makedirs(build, exist_ok=True)
         return argv, build, env
-
-    def configure(self, bb):
-        argv, cwd, env = self.create_command(bb)
-        self.run(argv, cwd, env, bb)
