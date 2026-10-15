@@ -14,6 +14,7 @@ MESON_INSTALL_RPATH ?= "$ORIGIN:$ORIGIN/../lib"
 MESON_DEBUG ?= "False"
 
 python do_configure() {
+    import shlex, subprocess
     from mesonproperties import apply_meson_properties
     from cbuildconfigure_classes.cbuildconfigure_meson import CBuildConfigureMeson
     import bbpaths, bbenv
