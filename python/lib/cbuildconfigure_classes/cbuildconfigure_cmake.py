@@ -1,46 +1,101 @@
-import os, buildjobs, cbuildconfigure
-import keyvalue.KeyValue as KV
+"""Reusable CMake configuration object for CIDE."""
+import os
+import shlex
+from cbuildconfigure_classes.common import BuildConfiguration, clean_linker_flags
 
 
-class CBuildConfigureCMake:
-    def __init__(self, filename):
-        self.filename = filename
-        self.env      = None
+class CBuildConfigureCMake(BuildConfiguration):
+    def create_command(self):
+        if not self.get('module'):
+            raise ValueError('CONFIGURE: MODULE NOT SET')
 
-    def create_command(self, d, ccd: cbuildconfigure.CBuildConfigureData):
-        env = os.environ.copy()
+        env = self.environ.copy()
+        target = self.get('target')
+        version = self.get('compiler_version')
+        sdk = self.get('sdk_dir')
+        if sdk:
+            env['SDK_DIR'] = sdk + '/' + target
+        roots = []
+        pkgpath = self.get('pkg_config_path', '').strip().strip(';').strip()
+        if pkgpath:
+            roots.append(pkgpath)
+        roots.append(self.get('temp_dir') + '/moduleref/' + target)
+        env['PKG_CONFIG_PATH'] = ';'.join(roots)
+        env['PKG_CONFIG_LIBDIR'] = ''
+        env['PKG_CONFIG_SYSROOT_DIR'] = ''
+        env['PKG_CONFIG_ALLOW_SYSTEM_LIBS'] = '0'
+        env['PKG_CONFIG_ALLOW_SYSTEM_CFLAGS'] = '0'
+        if version:
+            roots.append('/opt/compiler/' + version + '/' + version +
+                         '/x-tools/' + target + '/' + target + '/sysroot')
 
-        cmd = [d.getVar('CMAKE_BIN')]
+        tc = self.get('toolchain_file')
+        prefix = self.get('install_prefix')
+        install_rpath = self.get('install_rpath', '$ORIGIN;$ORIGIN/../lib')
+        warning = ' ' + self.get('warning_flags', '') + ' ' + self.get('dependency_include_flags', '')
+        linker = shlex.join(clean_linker_flags(self.get('linker_flags', '')))
 
-        env['PKG_CONFIG_PATH'] = d.getVar('CMAKE_PKG_CONFIG_PATH')
-        KV.append(cmd, '-DCMAKE_TOOLCHAIN_FILE=', ccd.cross_toolchain)
-        KV.append(cmd, '-DCMAKE_MODULE_PATH=', ccd.module_path)
-        KV.append(cmd, '-DCMAKE_INSTALL_PREFIX:PATH', ccd.install_prefix)
-        KV.append(cmd, '-DCMAKE_INSTALL_NATIVE_PREFIX:PATH', ccd.install_native_prefix)
-        KV.append(cmd, '-DCMAKE_INSTALLED_PREFIX:PATH', ccd.installed_prefix)
-        KV.append(cmd, '-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL', ccd.installed_prefix)
-        KV.append(cmd, '-DPython3_EXECUTABLE=', d.getVar('PYTHON_BIN'))
-        KV.append(cmd, '-DTOOLCHAIN_VERSION=', d.getVar('COMPILER_VERSION'))
-        KV.append(cmd, '-DCMAKE_INSTALL_RPATH:PATH=', ccd.install_rpath)
-        KV.append(cmd, '-DCMAKE_BUILD_RPATH:PATH=', ccd.build_rpath)
-        KV.append(cmd, '-DCMAKE_EXE_LINKER_FLAGS:PATH=', ccd.ld_flags)
-        KV.append(cmd, '-DCMAKE_EXE_LINKER_FLAGS:PATH=', ccd.ld_flags)
-        KV.append(cmd, '-DUSE_HAVE_FLAGS:BOOL=', ccd.use_have_flags)
+        argv = [
+            self.get('executable'),
+            '-DCMAKE_TOOLCHAIN_FILE=' + tc,
+            '-DPKG_CONFIG_ARGUMENTS= --define-prefix ',
+            '-DCMAKE_FIND_ROOT_PATH=' + ';'.join(roots),
+            '-DCMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH=OFF',
+            '-DCMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH=OFF',
+            '-DCMAKE_FIND_USE_PACKAGE_REGISTRY=OFF',
+            '-DCMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY=OFF',
+            '-DCMAKE_FIND_USE_CMAKE_PATH=OFF',
+            '-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER',
+            '-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY',
+            '-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY',
+            '-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY',
+            '-DCMAKE_MODULE_PATH:STRING=' + self.get('module_path'),
+            '-DCMAKE_INSTALL_PREFIX:PATH=' + prefix,
+            '-DCMAKE_INSTALLED_PREFIX:PATH=' + str(self.get('installed_prefix')),
+            '-DCMAKE_INSTALL_NATIVE_PREFIX:PATH=' + str(self.get('native_install_prefix')),
+            '-DCMAKE_EXPORT_COMPILE_COMMANDS=1',
+            '-DTOOLCHAIN_VERSION=' + (version or ''),
+            '-DPython3_EXECUTABLE=' + str(self.get('python_executable')),
+            '-DCMAKE_POLICY_VERSION_MINIMUM=3.30',
+            '-DCMAKE_SKIP_BUILD_RPATH=OFF',
+            '-DCMAKE_BUILD_WITH_INSTALL_RPATH=OFF',
+            '-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=OFF',
+            '-DCMAKE_INSTALL_RPATH:STRING=' + install_rpath,
+        ]
+        optional = {
+            'CMAKE_SYSTEM_PROGRAM_PATH:PATH': self.get('system_program_path'),
+            'CMAKE_PROGRAM_PATH:PATH': self.get('program_path'),
+            'CMAKE_BUILD_RPATH:STRING': None,
+            'CMAKE_PREFIX_PATH:PATH': self.get('prefix_path'),
+            'CMAKE_C_FLAGS_CMDL': self.get('c_flags', '') + warning,
+            'CMAKE_CXX_FLAGS_CMDL': self.get('cxx_flags', '') + warning,
+            'CURRENT_SYSNAME_SHORT': self.get('system_name'),
+            'CMAKE_EXE_LINKER_FLAGS': linker,
+            'USE_HAVE_FLAGS:BOOL': self.get('use_have_flags'),
+        }
+        argv += ['-D' + key + '=' + value for key, value in optional.items()
+                 if value is not None]
+        for key in ('BB_TOP_DIR', 'BB_TARGET', 'BB_TARGET_SUFFIX',
+                    'BB_TARGET_PREFIX', 'BB_NATIVE_TARGET',
+                    'BB_NATIVE_TARGET_SUFFIX', 'BB_NATIVE_TARGET_PREFIX',
+                    'BB_WORK_DIR'):
+            value = (self.get('top_dir') if key == 'BB_TOP_DIR' else
+                     self.get('temp_dir') + '/work' if key == 'BB_WORK_DIR' else
+                     self.get({'BB_TARGET': 'target',
+                               'BB_TARGET_SUFFIX': 'target_suffix',
+                               'BB_TARGET_PREFIX': 'target_prefix',
+                               'BB_NATIVE_TARGET': 'native_target',
+                               'BB_NATIVE_TARGET_SUFFIX': 'native_target_suffix',
+                               'BB_NATIVE_TARGET_PREFIX': 'native_target_prefix'}[key]))
+            argv.append('-D' + key + '=' + str(value))
+        argv += shlex.split(self.get('options', ''))
+        argv += ['-DCMAKE_MAKE_PROGRAM=' + self.get('make_program'),
+                 '-G', self.get('generator', 'Ninja'),
+                 self.get('source_dir')]
 
-        if None != cspp:
-            str += " -DCMAKE_SYSTEM_PROGRAM_PATH:PATH=" + cspp
-        if None != cprp:
-            str += " -DCMAKE_PROGRAM_PATH:PATH=" +cprp
-        if None != cpp:
-            str += " -DCMAKE_PREFIX_PATH:PATH=" + cpp
-        if None != copt:
-            str += " " + copt
-        str += " -DCMAKE_MAKE_PROGRAM=" + mp
-        str += " -G \"" + cgen + "\" " + csd
-
-        return env, str
-
-    def configure(self, d, ccd: cbuildconfigure.CBuildConfigureData):
-        env, cmd = self.create_command(d, ccd)
-        dp = buildjobs.DoProcess(cmd=cmd, env=env)
-        _, _, _ = dp.run_to_lines()
+        library_path = self.get('toolchain_library_path')
+        if library_path is not None:
+            env['LD_LIBRARY_PATH'] = library_path
+        build = self.get('build_dir')
+        os.makedirs(build, exist_ok=True)
+        return argv, build, env
