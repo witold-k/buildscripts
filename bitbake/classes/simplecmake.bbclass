@@ -89,7 +89,13 @@ python do_configure() {
     ccf   = (d.getVar('CMAKE_C_FLAGS') or '') + nw
     cxxf  = (d.getVar('CMAKE_CXX_FLAGS') or '') + nw
 
-    celf  = (d.getVar('CMAKE_EXE_LINKER_FLAGS') or '')
+    # Do not embed absolute staging RPATHs via raw linker flags.
+    # Keep -L and -rpath-link for build-time dependency resolution.
+    celf = shlex.join([
+        flag for flag in shlex.split(d.getVar('CMAKE_EXE_LINKER_FLAGS') or '')
+        if not (flag.startswith('-Wl,-rpath=')
+                or flag.startswith('-Wl,-rpath,'))
+    ])
 
     cgen  = d.getVar('CMAKE_GENERATOR')
     tpd   = d.getVar('TARGET_PREFIX_DIR')
