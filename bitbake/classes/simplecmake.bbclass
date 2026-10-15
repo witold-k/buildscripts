@@ -13,6 +13,7 @@ CMAKE_MAKE_OPTIONS ?= ""
 CMAKE_NPROC ?= "${NPROC}"
 
 python do_configure() {
+    import shlex, subprocess
     import bbdefaultvars
     from mesonproperties import apply_meson_properties
     from cbuildconfigure_classes.cbuildconfigure_cmake import CBuildConfigureCMake
