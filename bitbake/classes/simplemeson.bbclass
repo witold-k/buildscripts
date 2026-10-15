@@ -17,10 +17,11 @@ MESON_NATIVE_PKG_CONFIG_PATH ?= "${TMPDIR}/moduleref/${NATIVE_TARGET}:${NATIVE_P
 MESON_PKG_CONFIG ?= "/usr/bin/pkg-config"
 MESON_GENERATOR ?= "ninja"
 MESON_LDFLAGS ?= ""
+MESON_INSTALL_RPATH ?= "$ORIGIN:$ORIGIN/../lib"
 MESON_DEBUG ?= "False"
 
 python do_configure() {
-    import subprocess, sys, bbenv, bbpaths
+    import subprocess, sys, shlex, bbenv, bbpaths
     from pkgconfigsetup import CidePkgConfig
     from mesonproperties import apply_meson_properties
 
@@ -33,8 +34,6 @@ python do_configure() {
         raise Exception('CONFIGURE: MODULE NOT SET')
 
     rust = d.getVar('RUSTUP_HOME')
-    if rust is not None:
-        os.environ['RUSTUP_HOME'] = rust
 
     s = d.getVar('S')
     b = d.getVar('B')
@@ -52,11 +51,27 @@ python do_configure() {
     ccf = ' ' + (d.getVar('MESON_C_FLAGS') or '') + nw
     cxxf = ' ' + (d.getVar('MESON_CXX_FLAGS') or '') + nw
 
-    ldf = d.getVar('MESON_LDFLAGS')
-    os.environ['LDFLAGS'] = ldf or ''
-    os.environ['NINJA'] = d.getVar('NINJA_BIN')
-
+    # Staging libraries are located by -L and -rpath-link at link time.
+    # Absolute -rpath entries must not enter installed ELF binaries.
+    ldf = d.getVar('MESON_LDFLAGS') or ''
+    linker_args = [
+        flag for flag in shlex.split(ldf)
+        if not (flag.startswith('-Wl,-rpath=')
+                or flag.startswith('-Wl,-rpath,'))
+    ]
+    # Meson has no project-wide install_rpath option. Supply only
+    # relocatable runtime paths here; absolute staging RPATHs are excluded.
+    install_rpath = d.getVar('MESON_INSTALL_RPATH') or ''
+    for entry in install_rpath.split(':'):
+        if entry:
+            flag = '-Wl,-rpath=' + entry
+            if flag not in linker_args:
+                linker_args.append(flag)
     env = os.environ.copy()
+    env['LDFLAGS'] = shlex.join(linker_args)
+    env['NINJA'] = d.getVar('NINJA_BIN')
+    if rust is not None:
+        env['RUSTUP_HOME'] = rust
     bbenv.apply_localenv_keyvals(d, env, d.getVar('MESON_ENV'))
 
     #
@@ -85,44 +100,43 @@ python do_configure() {
 
     os.makedirs(b, exist_ok=True)
 
-    args = [meson_bin, 'setup', '--debug']
-    args += [
-        "-Dc_args='" + ccf + "'",
-        "-Dcpp_args='" + cxxf + "'"
+    # Pass argv directly instead of joining a shell command.
+    # Meson compiler/linker options are arrays, not shell-quoted strings.
+    args = [
+        meson_bin, 'setup', '--debug',
+        f"-Dc_args={shlex.split(ccf)!r}",
+        f"-Dcpp_args={shlex.split(cxxf)!r}",
     ]
 
     if is_native:
-        args += ['--native-file', tc]
+        args.extend(['--native-file', tc])
     else:
-        args += [
+        args.extend([
             '--native-file', ntc,
             '--cross-file', tc,
             '-Dbuild.c_args=-w',
             '-Dbuild.cpp_args=-w',
             '-Dpkg_config_path=' + host_pkgconfig.path,
             '-Dbuild.pkg_config_path=' + build_pkgconfig.path,
-        ]
+        ])
 
-    if ldf is not None:
-        args += [
-            "-Dc_link_args='" + ldf + "'",
-            "-Dcpp_link_args='" + ldf + "'"
-        ]
+    args.extend([
+        f"-Dc_link_args={linker_args!r}",
+        f"-Dcpp_link_args={linker_args!r}",
+    ])
 
     if copt:
-        args.append(copt)
+        args.extend(shlex.split(copt))
 
-    args += [
+    args.extend([
         '--prefix', tpd,
         '--libdir', tpd + '/lib',
         '--backend', mgen,
-        b, s
-    ]
-
-    cmd = ' '.join(args)
+        b, s,
+    ])
 
     bb.note('')
-    bb.note('cd ' + b + ' && ' + cmd)
+    bb.note('cd ' + shlex.quote(s) + ' && ' + shlex.join(args))
     bb.note('')
 
     ldlp = d.getVar('TOOLCHAIN_LD_LIBRARY_PATH')
@@ -173,8 +187,7 @@ python do_configure() {
     # Meson executes pkg-config using this environment.
     #
     p = subprocess.Popen(
-        cmd,
-        shell=True,
+        args,
         cwd=s,
         env=env,
         stdout=subprocess.PIPE,
@@ -190,7 +203,7 @@ python do_configure() {
             bb.plain(line.decode('utf-8').rstrip())
 
         bb.error('CONFIGURE FAILED: ' + b)
-        bb.warn('cd ' + s + ' && ' + cmd)
+        bb.warn('cd ' + shlex.quote(s) + ' && ' + shlex.join(args))
         sys.exit(retval)
 }
 

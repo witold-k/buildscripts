@@ -66,27 +66,25 @@ python do_install() {
 
     if os.path.exists(b + '/build.ninja'):
         mp = d.getVar('NINJA_NINJA_BIN')
-        cmd = "DESTDIR=" + inst + " " + mp + " -C " + b + " install"
-
     elif os.path.exists(b + '/Makefile'):
         mp = d.getVar('NINJA_MAKE_BIN')
-        cmd = "DESTDIR=" + inst + " " + mp + " -C " + b + " install"
-
     else:
         raise Exception('No build.ninja or Makefile found in ' + b)
 
     os.makedirs(inst, exist_ok=True)
-
-    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    lines = p.stdout.readlines();
+    cmd = [mp, '-C', b, 'install']
+    p = subprocess.Popen(
+        cmd, cwd=b, env=env,
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
+    lines = p.stdout.readlines()
     retval = p.wait()
     p.stdout.close()
 
-    if (retval):
+    if retval:
         for line in lines:
-            bb.plain(line.decode('utf-8').rstrip())
+            bb.plain(line.decode('utf-8', errors='replace').rstrip())
         bb.error('INSTALL FAILED: ' + b)
-        bb.warn('cd ' + b + ' && ' + cmd)
         sys.exit(retval)
 
     bbtools.installpkgconfig(bb, d, d.getVar('FILE_DIRNAME'), tpd, s, inst)
