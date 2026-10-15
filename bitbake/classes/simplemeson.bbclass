@@ -46,6 +46,7 @@ python do_configure() {
         'program_path': 'MESON_PROGRAM_PATH',
     }
     config = {name: d.getVar(variable) for name, variable in variables.items()}
+    config['native_build'] = str(config['native_build']).lower() in ('true', '1', 'yes')
     config['executable'] = bbpaths.BBPaths.from_current(d, 'meson').install_dir + '/bin/meson'
     env = os.environ.copy()
     bbenv.apply_localenv_keyvals(d, env, d.getVar('MESON_ENV'))
