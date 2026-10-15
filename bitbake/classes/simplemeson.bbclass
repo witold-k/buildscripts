@@ -17,6 +17,7 @@ MESON_NATIVE_PKG_CONFIG_PATH ?= "${TMPDIR}/moduleref/${NATIVE_TARGET}:${NATIVE_P
 MESON_PKG_CONFIG ?= "/usr/bin/pkg-config"
 MESON_GENERATOR ?= "ninja"
 MESON_LDFLAGS ?= ""
+MESON_INSTALL_RPATH ?= "$ORIGIN:$ORIGIN/../lib"
 MESON_DEBUG ?= "False"
 
 python do_configure() {
@@ -58,6 +59,14 @@ python do_configure() {
         if not (flag.startswith('-Wl,-rpath=')
                 or flag.startswith('-Wl,-rpath,'))
     ]
+    # Meson has no project-wide install_rpath option. Supply only
+    # relocatable runtime paths here; absolute staging RPATHs are excluded.
+    install_rpath = d.getVar('MESON_INSTALL_RPATH') or ''
+    for entry in install_rpath.split(':'):
+        if entry:
+            flag = '-Wl,-rpath=' + entry
+            if flag not in linker_args:
+                linker_args.append(flag)
     env = os.environ.copy()
     env['LDFLAGS'] = shlex.join(linker_args)
     env['NINJA'] = d.getVar('NINJA_BIN')
