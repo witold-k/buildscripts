@@ -105,7 +105,7 @@ python do_install() {
 
             with open(filename, 'rb') as elf:
                 header = elf.read(18)
-            if len(header) < 18 or header[:4] != b'\\x7fELF':
+            if len(header) < 18 or header[:4] != b'\x7fELF':
                 continue
 
             # ET_EXEC / ET_DYN only; do not attempt to patch object files.
