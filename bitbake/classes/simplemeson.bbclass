@@ -20,16 +20,33 @@ python do_configure() {
     import bbpaths, bbenv
 
     apply_meson_properties(d.getVar('TOOLCHAIN'), d)
-    keys = (
-        'MODULE S B IS_NATIVE TOOLCHAIN NATIVE_TOOLCHAIN COMPILER_VERSION '
-        'MESON_LDFLAGS MESON_INSTALL_RPATH NINJA_BIN RUSTUP_HOME '
-        'MESON_PKG_CONFIG MESON_PKG_CONFIG_PATH MESON_NATIVE_PKG_CONFIG_PATH '
-        'NOWARN MESON_C_FLAGS MESON_CXX_FLAGS MESON_OPTIONS '
-        'TARGET_PREFIX_DIR MESON_GENERATOR TOOLCHAIN_LD_LIBRARY_PATH '
-        'MESON_PROGRAM_PATH'
-    ).split()
-    config = {key: d.getVar(key) for key in keys}
-    config['MESON_BIN'] = bbpaths.BBPaths.from_current(d, 'meson').install_dir + '/bin/meson'
+    # Translate BitBake variable names at the boundary.
+    variables = {
+        'module': 'MODULE',
+        'source_dir': 'S',
+        'build_dir': 'B',
+        'native_build': 'IS_NATIVE',
+        'toolchain_file': 'TOOLCHAIN',
+        'build_machine_toolchain_file': 'NATIVE_TOOLCHAIN',
+        'compiler_version': 'COMPILER_VERSION',
+        'linker_flags': 'MESON_LDFLAGS',
+        'install_rpath': 'MESON_INSTALL_RPATH',
+        'ninja_executable': 'NINJA_BIN',
+        'rustup_home': 'RUSTUP_HOME',
+        'pkg_config_executable': 'MESON_PKG_CONFIG',
+        'pkg_config_path': 'MESON_PKG_CONFIG_PATH',
+        'build_pkg_config_path': 'MESON_NATIVE_PKG_CONFIG_PATH',
+        'warning_flags': 'NOWARN',
+        'c_flags': 'MESON_C_FLAGS',
+        'cxx_flags': 'MESON_CXX_FLAGS',
+        'options': 'MESON_OPTIONS',
+        'install_prefix': 'TARGET_PREFIX_DIR',
+        'backend': 'MESON_GENERATOR',
+        'toolchain_library_path': 'TOOLCHAIN_LD_LIBRARY_PATH',
+        'program_path': 'MESON_PROGRAM_PATH',
+    }
+    config = {name: d.getVar(variable) for name, variable in variables.items()}
+    config['executable'] = bbpaths.BBPaths.from_current(d, 'meson').install_dir + '/bin/meson'
     env = os.environ.copy()
     bbenv.apply_localenv_keyvals(d, env, d.getVar('MESON_ENV'))
     argv, cwd, env = CBuildConfigureMeson(config, env).configure()
