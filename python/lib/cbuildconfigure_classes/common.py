@@ -1,7 +1,6 @@
 """Reusable helpers for configuring CIDE build systems."""
 import os
 import shlex
-import subprocess
 
 
 def clean_linker_flags(flags):
@@ -11,20 +10,14 @@ def clean_linker_flags(flags):
 
 
 class BuildConfiguration:
-    def __init__(self, d):
-        self.d = d
+    def __init__(self, config, environ=None):
+        self.config = dict(config)
+        self.environ = dict(os.environ if environ is None else environ)
 
     def get(self, key, default=None):
-        value = self.d.getVar(key)
+        value = self.config.get(key)
         return default if value is None else value
 
-    def run(self, argv, cwd, env, bb):
-        bb.note("CONFIGURE: " + shlex.join(argv))
-        result = subprocess.run(argv, cwd=cwd, env=env,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.STDOUT, text=True)
-        if result.returncode:
-            bb.plain(result.stdout)
-            raise RuntimeError("Configuration failed: " + shlex.join(argv))
-        for line in result.stdout.splitlines():
-            bb.note(line)
+    def configure(self):
+        """Return (argv, cwd, env), suitable for subprocess.run."""
+        return self.create_command()
